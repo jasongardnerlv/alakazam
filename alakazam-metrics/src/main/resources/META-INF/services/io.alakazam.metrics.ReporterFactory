@@ -1,0 +1,3 @@
+io.alakazam.metrics.ConsoleReporterFactory
+io.alakazam.metrics.CsvReporterFactory
+io.alakazam.metrics.Slf4jReporterFactory

@@ -1,0 +1,2 @@
+io.alakazam.jetty.HttpConnectorFactory
+io.alakazam.jetty.HttpsConnectorFactory

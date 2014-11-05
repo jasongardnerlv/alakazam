@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="io.alakazam.servlets.tasks.GarbageCollectionTask"/>
+        <Method name="execute"/>
+        <Bug pattern="DM_GC"/>
+    </Match>
+    <Match>
+        <Class name="io.alakazam.Application"/>
+        <Method name="run"/>
+        <Bug pattern="DM_EXIT"/>
+    </Match>
+    <Match>
+        <Bug code="Se"/>
+        <Class name="io.alakazam.servlets.tasks.TaskServlet"/>
+    </Match>
+    <Match>
+        <Bug code="Se"/>
+        <Class name="io.alakazam.servlets.assets.AssetServlet"/>
+    </Match>
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"/>
+        <Class name="io.alakazam.configuration.ConfigurationFactory"/>
+    </Match>
+</FindBugsFilter>

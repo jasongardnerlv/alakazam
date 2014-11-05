@@ -1,0 +1,3 @@
+io.alakazam.logging.ConsoleAppenderFactory
+io.alakazam.logging.FileAppenderFactory
+io.alakazam.logging.SyslogAppenderFactory
