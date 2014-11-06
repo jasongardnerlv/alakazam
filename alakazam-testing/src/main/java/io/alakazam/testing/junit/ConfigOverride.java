@@ -15,6 +15,6 @@ public class ConfigOverride {
     }
 
     public void addToSystemProperties() {
-        System.setProperty("dw." + key, value);
+        System.setProperty("alkzm." + key, value);
     }
 }

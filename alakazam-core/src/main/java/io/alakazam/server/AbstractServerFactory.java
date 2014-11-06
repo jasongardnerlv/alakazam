@@ -1,20 +1,12 @@
 package io.alakazam.server;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
-import com.codahale.metrics.jetty9.InstrumentedHandler;
-import com.codahale.metrics.jetty9.InstrumentedQueuedThreadPool;
-import com.codahale.metrics.servlets.AdminServlet;
-import com.codahale.metrics.servlets.HealthCheckServlet;
-import com.codahale.metrics.servlets.MetricsServlet;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-import io.alakazam.jersey.jackson.JacksonMessageBodyProvider;
-import io.alakazam.jersey.setup.JerseyEnvironment;
+import io.alakazam.resteasy.jackson.JacksonMessageBodyProvider;
+import io.alakazam.resteasy.setup.RestEasyEnvironment;
 import io.alakazam.jetty.GzipFilterFactory;
 import io.alakazam.jetty.MutableServletContextHandler;
 import io.alakazam.jetty.NonblockingServletHolder;
@@ -26,14 +18,18 @@ import io.alakazam.validation.MinDuration;
 import io.alakazam.validation.ValidationMethod;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.setuid.RLimit;
 import org.eclipse.jetty.setuid.SetUIDListener;
 import org.eclipse.jetty.util.BlockingArrayQueue;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -366,18 +362,6 @@ public abstract class AbstractServerFactory implements ServerFactory {
         this.shutdownGracePeriod = shutdownGracePeriod;
     }
 
-    protected Handler createAdminServlet(Server server,
-                                         MutableServletContextHandler handler,
-                                         MetricRegistry metrics,
-                                         HealthCheckRegistry healthChecks) {
-        configureSessionsAndSecurity(handler, server);
-        handler.setServer(server);
-        handler.getServletContext().setAttribute(MetricsServlet.METRICS_REGISTRY, metrics);
-        handler.getServletContext().setAttribute(HealthCheckServlet.HEALTH_CHECK_REGISTRY, healthChecks);
-        handler.addServlet(new NonblockingServletHolder(new AdminServlet()), "/*");
-        return handler;
-    }
-
     private void configureSessionsAndSecurity(MutableServletContextHandler handler, Server server) {
         if (handler.isSecurityEnabled()) {
             handler.getSecurityHandler().setServer(server);
@@ -388,34 +372,31 @@ public abstract class AbstractServerFactory implements ServerFactory {
     }
 
     protected Handler createAppServlet(Server server,
-                                       JerseyEnvironment jersey,
+                                       RestEasyEnvironment resteasy,
                                        ObjectMapper objectMapper,
                                        Validator validator,
                                        MutableServletContextHandler handler,
-                                       @Nullable ServletContainer jerseyContainer,
-                                       MetricRegistry metricRegistry) {
+                                       @Nullable HttpServletDispatcher restEasyContainer) {
         configureSessionsAndSecurity(handler, server);
         handler.addFilter(ThreadNameFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
         if (gzip.isEnabled()) {
             final FilterHolder holder = new FilterHolder(gzip.build());
             handler.addFilter(holder, "/*", EnumSet.allOf(DispatcherType.class));
         }
-        if (jerseyContainer != null) {
-            jersey.register(new JacksonMessageBodyProvider(objectMapper, validator));
-            handler.addServlet(new NonblockingServletHolder(jerseyContainer), jersey.getUrlPattern());
+        if (restEasyContainer != null) {
+            resteasy.register(new JacksonMessageBodyProvider(objectMapper, validator));
+            final ServletHolder nbHolder = new NonblockingServletHolder(restEasyContainer);
+            nbHolder.setInitParameter("javax.ws.rs.Application", "io.alakazam.resteasy.AlakazamResourceConfig");
+            handler.addServlet(nbHolder, resteasy.getUrlPattern());
         }
-        final InstrumentedHandler instrumented = new InstrumentedHandler(metricRegistry);
-        instrumented.setServer(server);
-        instrumented.setHandler(handler);
-        return instrumented;
+        return handler;
     }
 
-    protected ThreadPool createThreadPool(MetricRegistry metricRegistry) {
+    protected ThreadPool createThreadPool() {
         final BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
-        final InstrumentedQueuedThreadPool threadPool =
-                new InstrumentedQueuedThreadPool(metricRegistry, maxThreads, minThreads,
+        final QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads,
                                                  (int) idleThreadTimeout.toMilliseconds(), queue);
-        threadPool.setName("dw");
+        threadPool.setName("alkzm");
         return threadPool;
     }
 

@@ -1,6 +1,5 @@
 package io.alakazam.testing.app;
 
-import com.codahale.metrics.annotation.Timed;
 import io.alakazam.testing.Person;
 
 import javax.ws.rs.GET;
@@ -19,7 +18,6 @@ public class PersonResource {
     }
 
     @GET
-    @Timed
     public Person getPerson(@PathParam("name") String name) {
         return store.fetchPerson(name);
     }

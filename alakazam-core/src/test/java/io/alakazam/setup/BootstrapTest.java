@@ -46,12 +46,6 @@ public class BootstrapTest {
     }
 
     @Test
-    public void comesWithJvmInstrumentation() throws Exception {
-        assertThat(bootstrap.getMetricRegistry().getNames())
-                .contains("jvm.buffers.mapped.capacity", "jvm.threads.count", "jvm.memory.heap.usage");
-    }
-
-    @Test
     public void defaultsToDefaultConfigurationFactoryFactory() throws Exception {
         assertThat(bootstrap.getConfigurationFactoryFactory())
                 .isInstanceOf(DefaultConfigurationFactoryFactory.class);

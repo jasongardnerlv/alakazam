@@ -28,7 +28,7 @@ public class ConfigurationFactoryFactoryTest {
 
      @Test
      public void createDefaultFactory() throws Exception {
-         ConfigurationFactory<Example> factory = factoryFactory.create(Example.class, validator, Jackson.newObjectMapper(), "dw");
+         ConfigurationFactory<Example> factory = factoryFactory.create(Example.class, validator, Jackson.newObjectMapper(), "alkzm");
          final Example example = factory.build(validFile);
          assertThat(example.getName())
                  .isEqualTo("Coda Hale");

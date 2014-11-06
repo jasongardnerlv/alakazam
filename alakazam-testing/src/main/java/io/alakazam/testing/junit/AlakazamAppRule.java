@@ -64,7 +64,7 @@ public class AlakazamAppRule<C extends Configuration> implements TestRule {
     private void resetConfigOverrides() {
         for (Enumeration<?> props = System.getProperties().propertyNames(); props.hasMoreElements();) {
             String keyString = (String) props.nextElement();
-            if (keyString.startsWith("dw.")) {
+            if (keyString.startsWith("alkzm.")) {
                 System.clearProperty(keyString);
             }
         }

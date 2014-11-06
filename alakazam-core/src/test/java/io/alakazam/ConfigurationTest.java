@@ -1,7 +1,6 @@
 package io.alakazam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.spi.service.ServiceFinder;
 import io.alakazam.jackson.Jackson;
 import io.alakazam.jetty.ConnectorFactory;
 import io.alakazam.logging.AppenderFactory;
@@ -27,10 +26,10 @@ public class ConfigurationTest {
     @Test
     public void ensureConfigSerializable() throws Exception {
         final ObjectMapper mapper = Jackson.newObjectMapper();
-        mapper.getSubtypeResolver()
-              .registerSubtypes(ServiceFinder.find(AppenderFactory.class).toClassArray());
-        mapper.getSubtypeResolver()
-              .registerSubtypes(ServiceFinder.find(ConnectorFactory.class).toClassArray());
+        // mapper.getSubtypeResolver()
+        //       .registerSubtypes(ServiceFinder.find(AppenderFactory.class).toClassArray());
+        // mapper.getSubtypeResolver()
+        //       .registerSubtypes(ServiceFinder.find(ConnectorFactory.class).toClassArray());
 
         // Issue-96: some types were not serializable
         final String json = mapper.writeValueAsString(configuration);

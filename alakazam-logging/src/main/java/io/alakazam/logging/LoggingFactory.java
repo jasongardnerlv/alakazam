@@ -8,8 +8,6 @@ import ch.qos.logback.classic.jmx.JMXConfigurator;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.logback.InstrumentedAppender;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -101,7 +99,7 @@ public class LoggingFactory {
         this.appenders = ImmutableList.copyOf(appenders);
     }
 
-    public void configure(MetricRegistry metricRegistry, String name) {
+    public void configure(String name) {
         hijackJDKLogging();
 
         final Logger root = configureLevels();
@@ -123,8 +121,6 @@ public class LoggingFactory {
                 NotCompliantMBeanException | MBeanRegistrationException e) {
             throw new RuntimeException(e);
         }
-
-        configureInstrumentation(root, metricRegistry);
     }
 
     public void stop() {
@@ -133,13 +129,6 @@ public class LoggingFactory {
             LoggerContext context = (LoggerContext) loggerFactory;
             context.stop();
         }
-    }
-
-    private void configureInstrumentation(Logger root, MetricRegistry metricRegistry) {
-        final InstrumentedAppender appender = new InstrumentedAppender(metricRegistry);
-        appender.setContext(root.getLoggerContext());
-        appender.start();
-        root.addAppender(appender);
     }
 
     private Logger configureLevels() {

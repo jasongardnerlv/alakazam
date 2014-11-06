@@ -14,15 +14,13 @@
     </description>
     <modules>
         <module>alakazam-core</module>
-        <module>alakazam-auth</module>
         <module>alakazam-testing</module>
         <module>alakazam-util</module>
         <module>alakazam-jackson</module>
         <module>alakazam-validation</module>
         <module>alakazam-configuration</module>
         <module>alakazam-logging</module>
-        <module>alakazam-metrics</module>
-        <module>alakazam-jersey</module>
+        <module>alakazam-resteasy</module>
         <module>alakazam-jetty</module>
         <module>alakazam-servlets</module>
         <module>alakazam-lifecycle</module>
@@ -32,8 +30,7 @@
         <alakazam.url>TODO</alakazam.url>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <metrics3.version>3.1.0</metrics3.version>
-        <jersey.version>1.18.1</jersey.version>
+        <resteasy.version>3.0.10.Final</resteasy.version>
         <jackson.api.version>2.3.0</jackson.api.version>
         <jackson.version>2.3.2</jackson.version>
         <logback.version>1.1.1</logback.version>
@@ -178,6 +175,7 @@
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
+                    <skip>true</skip>
                     <effort>Max</effort>
                     <threshold>Default</threshold>
                     <xmlOutput>true</xmlOutput>

@@ -21,7 +21,7 @@ public class GzipFilterFactoryTest {
         this.gzip = new ConfigurationFactory<>(GzipFilterFactory.class,
                                                Validation.buildDefaultValidatorFactory()
                                                                  .getValidator(),
-                                               Jackson.newObjectMapper(), "dw")
+                                               Jackson.newObjectMapper(), "alkzm")
                 .build(new File(Resources.getResource("yaml/gzip.yml").toURI()));
     }
 

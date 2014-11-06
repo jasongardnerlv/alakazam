@@ -1,7 +1,5 @@
 package io.alakazam.jetty;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.jetty9.InstrumentedConnectionFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.alakazam.util.Duration;
@@ -20,8 +18,6 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.concurrent.TimeUnit;
-
-import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Builds HTTP connectors.
@@ -166,12 +162,6 @@ public class HttpConnectorFactory implements ConnectorFactory {
     public static ConnectorFactory application() {
         final HttpConnectorFactory factory = new HttpConnectorFactory();
         factory.port = 8080;
-        return factory;
-    }
-
-    public static ConnectorFactory admin() {
-        final HttpConnectorFactory factory = new HttpConnectorFactory();
-        factory.port = 8081;
         return factory;
     }
 
@@ -423,7 +413,6 @@ public class HttpConnectorFactory implements ConnectorFactory {
 
     @Override
     public Connector build(Server server,
-                           MetricRegistry metrics,
                            String name,
                            ThreadPool threadPool) {
         final HttpConfiguration httpConfig = buildHttpConfiguration();
@@ -434,13 +423,7 @@ public class HttpConnectorFactory implements ConnectorFactory {
 
         final ByteBufferPool bufferPool = buildBufferPool();
 
-        final String timerName = name(HttpConnectionFactory.class,
-                                      bindHost,
-                                      Integer.toString(port),
-                                      "connections");
-        return buildConnector(server, scheduler, bufferPool, name, threadPool,
-                              new InstrumentedConnectionFactory(httpConnectionFactory,
-                                                                metrics.timer(timerName)));
+        return buildConnector(server, scheduler, bufferPool, name, threadPool, httpConnectionFactory);
     }
 
     protected ServerConnector buildConnector(Server server,

@@ -72,7 +72,7 @@ public class ConfigurationFactoryTest {
 
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private final ConfigurationFactory<Example> factory =
-            new ConfigurationFactory<>(Example.class, validator, Jackson.newObjectMapper(), "dw");
+            new ConfigurationFactory<>(Example.class, validator, Jackson.newObjectMapper(), "alkzm");
     private File malformedFile;
     private File invalidFile;
     private File validFile;
@@ -81,7 +81,7 @@ public class ConfigurationFactoryTest {
     public void resetConfigOverrides() {
         for (Enumeration<?> props = System.getProperties().propertyNames(); props.hasMoreElements();) {
             String keyString = (String) props.nextElement();
-            if (keyString.startsWith("dw.")) {
+            if (keyString.startsWith("alkzm.")) {
                 System.clearProperty(keyString);
             }
         }
@@ -119,7 +119,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void handlesSimpleOverride() throws Exception {
-        System.setProperty("dw.name", "Coda Hale Overridden");
+        System.setProperty("alkzm.name", "Coda Hale Overridden");
         final Example example = factory.build(validFile);
         assertThat(example.getName())
             .isEqualTo("Coda Hale Overridden");
@@ -127,7 +127,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void handlesArrayOverride() throws Exception {
-        System.setProperty("dw.type", "coder,wizard,overridden");
+        System.setProperty("alkzm.type", "coder,wizard,overridden");
         final Example example = factory.build(validFile);
         assertThat(example.getType().get(2))
                 .isEqualTo("overridden");
@@ -137,7 +137,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void handlesArrayOverrideEscaped() throws Exception {
-        System.setProperty("dw.type", "coder,wizard,overr\\,idden");
+        System.setProperty("alkzm.type", "coder,wizard,overr\\,idden");
         final Example example = factory.build(validFile);
         assertThat(example.getType().get(2))
                 .isEqualTo("overr,idden");
@@ -147,7 +147,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void handlesSingleElementArrayOverride() throws Exception {
-        System.setProperty("dw.type", "overridden");
+        System.setProperty("alkzm.type", "overridden");
         final Example example = factory.build(validFile);
         assertThat(example.getType().get(0))
                 .isEqualTo("overridden");
@@ -157,7 +157,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void overridesArrayWithIndices() throws Exception {
-        System.setProperty("dw.type[1]", "overridden");
+        System.setProperty("alkzm.type[1]", "overridden");
         final Example example = factory.build(validFile);
 
         assertThat(example.getType().get(0))
@@ -168,7 +168,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void overridesArrayWithIndicesReverse() throws Exception {
-        System.setProperty("dw.type[0]", "overridden");
+        System.setProperty("alkzm.type[0]", "overridden");
         final Example example = factory.build(validFile);
 
         assertThat(example.getType().get(0))
@@ -179,8 +179,8 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void overridesArrayPropertiesWithIndices() throws Exception {
-        System.setProperty("dw.servers[0].port", "7000");
-        System.setProperty("dw.servers[2].port", "9000");
+        System.setProperty("alkzm.servers[0].port", "7000");
+        System.setProperty("alkzm.servers[2].port", "9000");
         final Example example = factory.build(validFile);
 
         assertThat(example.getServers())
@@ -193,7 +193,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void overrideMapProperty() throws Exception {
-        System.setProperty("dw.properties.settings.enabled", "true");
+        System.setProperty("alkzm.properties.settings.enabled", "true");
         final Example example = factory.build(validFile);
         assertThat(example.getProperties())
                 .contains(MapEntry.entry("debug", "true"),
@@ -202,7 +202,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void throwsAnExceptionOnUnexpectedArrayOverride() throws Exception {
-        System.setProperty("dw.servers.port", "9000");
+        System.setProperty("alkzm.servers.port", "9000");
         try {
             factory.build(validFile);
             failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
@@ -214,7 +214,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void throwsAnExceptionOnArrayOverrideWithInvalidType() throws Exception {
-        System.setProperty("dw.servers", "one,two");
+        System.setProperty("alkzm.servers", "one,two");
         try {
             factory.build(validFile);
             failBecauseExceptionWasNotThrown(ConfigurationParsingException.class);
@@ -226,7 +226,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void throwsAnExceptionOnOverrideArrayIndexOutOfBounds() throws Exception {
-        System.setProperty("dw.type[2]", "invalid");
+        System.setProperty("alkzm.type[2]", "invalid");
         try {
             factory.build(validFile);
             failBecauseExceptionWasNotThrown(ArrayIndexOutOfBoundsException.class);
@@ -238,7 +238,7 @@ public class ConfigurationFactoryTest {
 
     @Test
     public void throwsAnExceptionOnOverrideArrayPropertyIndexOutOfBounds() throws Exception {
-        System.setProperty("dw.servers[4].port", "9000");
+        System.setProperty("alkzm.servers[4].port", "9000");
         try {
             factory.build(validFile);
             failBecauseExceptionWasNotThrown(ArrayIndexOutOfBoundsException.class);

@@ -19,7 +19,7 @@ public class LoggingFactoryTest {
     private final ConfigurationFactory<LoggingFactory> factory =
             new ConfigurationFactory<>(LoggingFactory.class,
                                        Validation.buildDefaultValidatorFactory().getValidator(),
-                                       objectMapper, "dw");
+                                       objectMapper, "alkzm");
     private LoggingFactory config;
 
     @Before

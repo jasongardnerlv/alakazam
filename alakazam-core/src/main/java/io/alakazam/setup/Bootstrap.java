@@ -16,11 +16,6 @@ import io.alakazam.jackson.Jackson;
 import java.lang.management.ManagementFactory;
 import java.util.List;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.jvm.BufferPoolMetricSet;
-import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
-import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
-import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -40,7 +35,6 @@ public class Bootstrap<T extends Configuration> {
     private final List<Bundle> bundles;
     private final List<ConfiguredBundle<? super T>> configuredBundles;
     private final List<Command> commands;
-    private final MetricRegistry metricRegistry;
     private final ValidatorFactory validatorFactory;
 
     private ConfigurationSourceProvider configurationSourceProvider;
@@ -58,13 +52,7 @@ public class Bootstrap<T extends Configuration> {
         this.bundles = Lists.newArrayList();
         this.configuredBundles = Lists.newArrayList();
         this.commands = Lists.newArrayList();
-        this.metricRegistry = new MetricRegistry();
         this.validatorFactory = Validation.buildDefaultValidatorFactory();
-        metricRegistry.register("jvm.buffers", new BufferPoolMetricSet(ManagementFactory
-                                                                               .getPlatformMBeanServer()));
-        metricRegistry.register("jvm.gc", new GarbageCollectorMetricSet());
-        metricRegistry.register("jvm.memory", new MemoryUsageGaugeSet());
-        metricRegistry.register("jvm.threads", new ThreadStatesGaugeSet());
 
         this.configurationSourceProvider = new FileConfigurationSourceProvider();
         this.classLoader = Thread.currentThread().getContextClassLoader();
@@ -172,13 +160,6 @@ public class Bootstrap<T extends Configuration> {
      */
     public ImmutableList<Command> getCommands() {
         return ImmutableList.copyOf(commands);
-    }
-
-    /**
-     * Returns the application's metrics.
-     */
-    public MetricRegistry getMetricRegistry() {
-        return metricRegistry;
     }
 
     /**

@@ -3,7 +3,6 @@ package io.alakazam;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import io.alakazam.logging.LoggingFactory;
-import io.alakazam.metrics.MetricsFactory;
 import io.alakazam.server.DefaultServerFactory;
 import io.alakazam.server.ServerFactory;
 
@@ -67,10 +66,6 @@ public class Configuration {
     @NotNull
     private LoggingFactory logging = new LoggingFactory();
 
-    @Valid
-    @NotNull
-    private MetricsFactory metrics = new MetricsFactory();
-
     /**
      * Returns the server-specific section of the configuration file.
      *
@@ -105,16 +100,6 @@ public class Configuration {
     @JsonProperty("logging")
     public void setLoggingFactory(LoggingFactory factory) {
         this.logging = factory;
-    }
-
-    @JsonProperty("metrics")
-    public MetricsFactory getMetricsFactory() {
-        return metrics;
-    }
-
-    @JsonProperty("metrics")
-    public void setMetricsFactory(MetricsFactory metrics) {
-        this.metrics = metrics;
     }
 
     @Override

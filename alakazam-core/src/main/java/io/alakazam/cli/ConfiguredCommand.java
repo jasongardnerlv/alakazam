@@ -69,8 +69,7 @@ public abstract class ConfiguredCommand<T extends Configuration> extends Command
 
         try {
             if (configuration != null) {
-                configuration.getLoggingFactory().configure(bootstrap.getMetricRegistry(),
-                                                            bootstrap.getApplication().getName());
+                configuration.getLoggingFactory().configure(bootstrap.getApplication().getName());
             }
 
             run((Bootstrap<T>) bootstrap, namespace, configuration);
@@ -109,7 +108,7 @@ public abstract class ConfiguredCommand<T extends Configuration> extends Command
                                  String path,
                                  Class<T> klass,
                                  ObjectMapper objectMapper) throws IOException, ConfigurationException {
-        final ConfigurationFactory<T> configurationFactory = configurationFactoryFactory.create(klass, validator, objectMapper, "dw");
+        final ConfigurationFactory<T> configurationFactory = configurationFactoryFactory.create(klass, validator, objectMapper, "alkzm");
         if (path != null) {
             return configurationFactory.build(provider, path);
         }

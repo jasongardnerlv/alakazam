@@ -33,17 +33,12 @@ import javax.validation.constraints.NotNull;
  *     <tr>
  *         <td>{@code connector}</td>
  *         <td>An {@link HttpConnectorFactory HTTP connector} listening on port {@code 8080}.</td>
- *         <td>The {@link ConnectorFactory connector} which will handle both application and admin requests.</td>
+ *         <td>The {@link ConnectorFactory connector} which will handle the application requests.</td>
  *     </tr>
  *     <tr>
  *         <td>{@code applicationContextPath}</td>
  *         <td>{@code /application}</td>
- *         <td>The context path of the application servlets, including Jersey.</td>
- *     </tr>
- *     <tr>
- *         <td>{@code adminContextPath}</td>
- *         <td>{@code /admin}</td>
- *         <td>The context path of the admin servlets, including metrics and tasks.</td>
+ *         <td>The context path of the application servlets, including RestEasy.</td>
  *     </tr>
  * </table>
  * <p/>
@@ -60,9 +55,6 @@ public class SimpleServerFactory extends AbstractServerFactory {
 
     @NotEmpty
     private String applicationContextPath = "/application";
-
-    @NotEmpty
-    private String adminContextPath = "/admin";
 
     @JsonProperty
     public ConnectorFactory getConnector() {
@@ -84,47 +76,28 @@ public class SimpleServerFactory extends AbstractServerFactory {
         this.applicationContextPath = contextPath;
     }
 
-    @JsonProperty
-    public String getAdminContextPath() {
-        return adminContextPath;
-    }
-
-    @JsonProperty
-    public void setAdminContextPath(String contextPath) {
-        this.adminContextPath = contextPath;
-    }
-
     @Override
     public Server build(Environment environment) {
         printBanner(environment.getName());
-        final ThreadPool threadPool = createThreadPool(environment.metrics());
+        final ThreadPool threadPool = createThreadPool();
         final Server server = buildServer(environment.lifecycle(), threadPool);
 
         environment.getApplicationContext().setContextPath(applicationContextPath);
         final Handler applicationHandler = createAppServlet(server,
-                                                            environment.jersey(),
+                                                            environment.resteasy(),
                                                             environment.getObjectMapper(),
                                                             environment.getValidator(),
                                                             environment.getApplicationContext(),
-                                                            environment.getJerseyServletContainer(),
-                                                            environment.metrics());
-
-        environment.getAdminContext().setContextPath(adminContextPath);
-        final Handler adminHandler = createAdminServlet(server,
-                                                        environment.getAdminContext(),
-                                                        environment.metrics(),
-                                                        environment.healthChecks());
+                                                            environment.getRestEasyServletContainer());
 
         final Connector conn = connector.build(server,
-                                               environment.metrics(),
                                                environment.getName(),
                                                null);
 
         server.addConnector(conn);
 
         final ContextRoutingHandler routingHandler = new ContextRoutingHandler(ImmutableMap.of(
-                applicationContextPath, applicationHandler,
-                adminContextPath, adminHandler
+                applicationContextPath, applicationHandler
         ));
         server.setHandler(addStatsHandler(addRequestLog(server, routingHandler, environment.getName())));
 

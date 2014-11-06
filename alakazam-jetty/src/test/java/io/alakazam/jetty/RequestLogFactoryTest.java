@@ -28,7 +28,7 @@ public class RequestLogFactoryTest {
         this.requestLog = new ConfigurationFactory<>(RequestLogFactory.class,
                                                      Validation.buildDefaultValidatorFactory()
                                                                        .getValidator(),
-                                                     objectMapper, "dw")
+                                                     objectMapper, "alkzm")
                 .build(new File(Resources.getResource("yaml/requestLog.yml").toURI()));
     }
 

@@ -1,12 +1,10 @@
 package io.alakazam.setup;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-import io.alakazam.jersey.AlakazamResourceConfig;
-import io.alakazam.jersey.setup.JerseyContainerHolder;
-import io.alakazam.jersey.setup.JerseyEnvironment;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import io.alakazam.resteasy.AlakazamResourceConfig;
+import io.alakazam.resteasy.setup.RestEasyContainerHolder;
+import io.alakazam.resteasy.setup.RestEasyEnvironment;
 import io.alakazam.jetty.MutableServletContextHandler;
 import io.alakazam.jetty.setup.ServletEnvironment;
 import io.alakazam.lifecycle.setup.LifecycleEnvironment;
@@ -22,22 +20,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Environment {
     private final String name;
-    private final MetricRegistry metricRegistry;
-    private final HealthCheckRegistry healthCheckRegistry;
 
     private final ObjectMapper objectMapper;
     private Validator validator;
 
-    private final JerseyContainerHolder jerseyServletContainer;
-    private final JerseyEnvironment jerseyEnvironment;
+    private final RestEasyContainerHolder restEasyServletContainer;
+    private final RestEasyEnvironment restEasyEnvironment;
 
     private final MutableServletContextHandler servletContext;
     private final ServletEnvironment servletEnvironment;
 
     private final LifecycleEnvironment lifecycleEnvironment;
-
-    private final MutableServletContextHandler adminContext;
-    private final AdminEnvironment adminEnvironment;
 
     /**
      * Creates a new environment.
@@ -48,42 +41,29 @@ public class Environment {
     public Environment(String name,
                        ObjectMapper objectMapper,
                        Validator validator,
-                       MetricRegistry metricRegistry,
                        ClassLoader classLoader) {
         this.name = name;
         this.objectMapper = objectMapper;
-        this.metricRegistry = metricRegistry;
-        this.healthCheckRegistry = new HealthCheckRegistry();
         this.validator = validator;
 
         this.servletContext = new MutableServletContextHandler();
         servletContext.setClassLoader(classLoader);
         this.servletEnvironment = new ServletEnvironment(servletContext);
 
-        this.adminContext = new MutableServletContextHandler();
-        adminContext.setClassLoader(classLoader);
-        this.adminEnvironment = new AdminEnvironment(adminContext, healthCheckRegistry);
-
         this.lifecycleEnvironment = new LifecycleEnvironment();
 
-        final AlakazamResourceConfig jerseyConfig = new AlakazamResourceConfig(metricRegistry);
-        this.jerseyServletContainer = new JerseyContainerHolder(new ServletContainer(jerseyConfig));
-        this.jerseyEnvironment = new JerseyEnvironment(jerseyServletContainer, jerseyConfig);
+        final AlakazamResourceConfig restEasyConfig = new AlakazamResourceConfig();
+        this.restEasyServletContainer = new RestEasyContainerHolder(new HttpServletDispatcher());
+        this.restEasyEnvironment = new RestEasyEnvironment(restEasyServletContainer, restEasyConfig);
     }
 
     /**
-     * Returns the application's {@link JerseyEnvironment}.
+     * Returns the application's {@link RestEasyEnvironment}.
      */
-    public JerseyEnvironment jersey() {
-        return jerseyEnvironment;
+    public RestEasyEnvironment resteasy() {
+        return restEasyEnvironment;
     }
 
-    /**
-     * Returns the application's {@link AdminEnvironment}.
-     */
-    public AdminEnvironment admin() {
-        return adminEnvironment;
-    }
 
     /**
      * Returns the application's {@link LifecycleEnvironment}.
@@ -127,20 +107,6 @@ public class Environment {
         this.validator = checkNotNull(validator);
     }
 
-    /**
-     * Returns the application's {@link MetricRegistry}.
-     */
-    public MetricRegistry metrics() {
-        return metricRegistry;
-    }
-
-    /**
-     * Returns the application's {@link HealthCheckRegistry}.
-     */
-    public HealthCheckRegistry healthChecks() {
-        return healthCheckRegistry;
-    }
-
     /*
     * Internal Accessors
     */
@@ -151,11 +117,8 @@ public class Environment {
         return servletContext;
     }
 
-    public ServletContainer getJerseyServletContainer() {
-        return jerseyServletContainer.getContainer();
+    public HttpServletDispatcher getRestEasyServletContainer() {
+        return restEasyServletContainer.getContainer();
     }
 
-    public MutableServletContextHandler getAdminContext() {
-        return adminContext;
-    }
 }

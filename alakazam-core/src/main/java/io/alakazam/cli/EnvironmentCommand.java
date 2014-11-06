@@ -34,10 +34,7 @@ public abstract class EnvironmentCommand<T extends Configuration> extends Config
         final Environment environment = new Environment(bootstrap.getApplication().getName(),
                                                         bootstrap.getObjectMapper(),
                                                         bootstrap.getValidatorFactory().getValidator(),
-                                                        bootstrap.getMetricRegistry(),
                                                         bootstrap.getClassLoader());
-        configuration.getMetricsFactory().configure(environment.lifecycle(),
-                                                    bootstrap.getMetricRegistry());
         bootstrap.run(configuration, environment);
         application.run(configuration, environment);
         run(environment, namespace, configuration);

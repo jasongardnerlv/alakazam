@@ -1,7 +1,5 @@
 package io.alakazam.jetty;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.jetty9.InstrumentedConnectionFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.common.base.Strings;
@@ -30,8 +28,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Builds HTTPS connectors (HTTP over TLS/SSL).
@@ -490,7 +486,7 @@ public class HttpsConnectorFactory extends HttpConnectorFactory {
     }
 
     @Override
-    public Connector build(Server server, MetricRegistry metrics, String name, ThreadPool threadPool) {
+    public Connector build(Server server, String name, ThreadPool threadPool) {
         logSupportedParameters();
 
         final HttpConfiguration httpConfig = buildHttpConfiguration();
@@ -507,15 +503,8 @@ public class HttpsConnectorFactory extends HttpConnectorFactory {
 
         final ByteBufferPool bufferPool = buildBufferPool();
 
-        final String timerName = name(HttpConnectionFactory.class,
-                                      getBindHost(),
-                                      Integer.toString(getPort()),
-                                      "connections");
-
         return buildConnector(server, scheduler, bufferPool, name, threadPool,
-                              new InstrumentedConnectionFactory(sslConnectionFactory,
-                                                                metrics.timer(timerName)),
-                              httpConnectionFactory);
+                              sslConnectionFactory, httpConnectionFactory);
     }
 
     @Override
