@@ -80,7 +80,7 @@ public class DefaultServerFactoryTest {
                 .contains(DefaultServerFactory.class);
     }
 
-    //@Test
+    @Test
     public void testGracefulShutdown() throws Exception {
         ObjectMapper objectMapper = Jackson.newObjectMapper();
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

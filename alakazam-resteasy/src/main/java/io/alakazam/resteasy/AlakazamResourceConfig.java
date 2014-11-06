@@ -21,9 +21,19 @@ import java.util.Set;
 public class AlakazamResourceConfig extends Application {
     private static final String NEWLINE = String.format("%n");
     private static final Logger LOGGER = LoggerFactory.getLogger(AlakazamResourceConfig.class);
+
+    private static Set<Class<?>> classes = Sets.newHashSet();
+    private static Set<Object> singletons = Sets.newHashSet();
+
+    public static void addClass(Class<?> clazz) {
+        classes.add(clazz);
+    }
+
+    public static void addSingleton(Object obj) {
+        singletons.add(obj);
+    }
+
     private String urlPattern;
-    private final Set<Class<?>> classes = Sets.newHashSet();
-    private final Set<Object> singletons = Sets.newHashSet();
 
     public AlakazamResourceConfig() {
         super();
@@ -48,10 +58,12 @@ public class AlakazamResourceConfig extends Application {
         this.urlPattern = urlPattern;
     }
 
+    @Override
     public Set<Class<?>> getClasses() {
         return classes;
     }
 
+    @Override
     public Set<Object> getSingletons() {
         return singletons;
     }

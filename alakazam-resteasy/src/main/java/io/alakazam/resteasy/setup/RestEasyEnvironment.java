@@ -1,7 +1,9 @@
 package io.alakazam.resteasy.setup;
 
 import com.google.common.base.Function;
+import io.alakazam.jetty.MutableServletContextHandler;
 import io.alakazam.resteasy.AlakazamResourceConfig;
+import org.jboss.resteasy.spi.Registry;
 
 import javax.annotation.Nullable;
 
@@ -9,12 +11,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RestEasyEnvironment {
     private final RestEasyContainerHolder holder;
-    private final AlakazamResourceConfig config;
+    private final MutableServletContextHandler servletContext;
+    private String urlPattern;
 
     public RestEasyEnvironment(RestEasyContainerHolder holder,
-                             AlakazamResourceConfig config) {
+                                String urlPattern,
+                                MutableServletContextHandler servletContext) {
         this.holder = holder;
-        this.config = config;
+        this.urlPattern = urlPattern;
+        this.servletContext = servletContext;
     }
 
     public void disable() {
@@ -32,7 +37,12 @@ public class RestEasyEnvironment {
      * @param component a RestEasy singleton component
      */
     public void register(Object component) {
-        config.getSingletons().add(checkNotNull(component));
+        Registry registry = ((Registry)servletContext.getAttribute(Registry.class.getName()));
+        if (registry != null) {
+            registry.addSingletonResource(checkNotNull(component));
+        } else {
+            AlakazamResourceConfig.addSingleton(checkNotNull(component));
+        }
     }
 
     /**
@@ -41,7 +51,12 @@ public class RestEasyEnvironment {
      * @param componentClass a RestEasy component class
      */
     public void register(Class<?> componentClass) {
-        config.getClasses().add(checkNotNull(componentClass));
+        Registry registry = ((Registry)servletContext.getAttribute(Registry.class.getName()));
+        if (registry != null) {
+            registry.addPerRequestResource(checkNotNull(componentClass));
+        } else {
+            AlakazamResourceConfig.addClass(checkNotNull(componentClass));
+        }
     }
 
     // TODO
@@ -102,14 +117,11 @@ public class RestEasyEnvironment {
     // }
 
     public String getUrlPattern() {
-        return config.getUrlPattern();
+        return urlPattern;
     }
 
     public void setUrlPattern(String urlPattern) {
-        config.setUrlPattern(urlPattern);
+        this.urlPattern = urlPattern;
     }
 
-    public AlakazamResourceConfig getResourceConfig() {
-        return config;
-    }
 }
