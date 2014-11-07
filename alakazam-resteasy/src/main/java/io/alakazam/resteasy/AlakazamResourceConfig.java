@@ -22,15 +22,18 @@ public class AlakazamResourceConfig extends Application {
     private static final String NEWLINE = String.format("%n");
     private static final Logger LOGGER = LoggerFactory.getLogger(AlakazamResourceConfig.class);
 
-    private static Set<Class<?>> classes = Sets.newHashSet();
     private static Set<Object> singletons = Sets.newHashSet();
-
-    public static void addClass(Class<?> clazz) {
-        classes.add(clazz);
-    }
 
     public static void addSingleton(Object obj) {
         singletons.add(obj);
+    }
+
+    public static void removeClass(Class<?> clazz) {
+        for (Object singleton : singletons) {
+            if (clazz.isAssignableFrom(singleton.getClass())) {
+                singletons.remove(singleton);
+            }
+        }
     }
 
     public static Set<Object> getAllSingletons() {
@@ -57,7 +60,7 @@ public class AlakazamResourceConfig extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        return classes;
+        return Sets.newHashSet();
     }
 
     @Override

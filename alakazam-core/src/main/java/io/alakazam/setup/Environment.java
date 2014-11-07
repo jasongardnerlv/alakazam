@@ -2,8 +2,6 @@ package io.alakazam.setup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
-import io.alakazam.resteasy.AlakazamResourceConfig;
 import io.alakazam.resteasy.setup.RestEasyContainerHolder;
 import io.alakazam.resteasy.setup.RestEasyEnvironment;
 import io.alakazam.jetty.MutableServletContextHandler;
@@ -49,13 +47,12 @@ public class Environment {
 
         this.servletContext = new MutableServletContextHandler();
         servletContext.setClassLoader(classLoader);
-        servletContext.addEventListener(new ResteasyBootstrap());
         this.servletEnvironment = new ServletEnvironment(servletContext);
 
         this.lifecycleEnvironment = new LifecycleEnvironment();
 
         this.restEasyServletContainer = new RestEasyContainerHolder(new HttpServletDispatcher());
-        this.restEasyEnvironment = new RestEasyEnvironment(restEasyServletContainer, "/*", servletContext);
+        this.restEasyEnvironment = new RestEasyEnvironment(restEasyServletContainer, "/*");
     }
 
     /**

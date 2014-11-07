@@ -2,11 +2,11 @@ package io.alakazam.resteasy.setup;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
-import io.alakazam.jetty.MutableServletContextHandler;
 import io.alakazam.resteasy.AlakazamResourceConfig;
+import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,20 +21,18 @@ import javax.annotation.Nullable;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 
+import java.util.Enumeration;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RestEasyEnvironment {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestEasyEnvironment.class);
     private final RestEasyContainerHolder holder;
-    private final MutableServletContextHandler servletContext;
     private String urlPattern;
 
-    public RestEasyEnvironment(RestEasyContainerHolder holder,
-                                String urlPattern,
-                                MutableServletContextHandler servletContext) {
+    public RestEasyEnvironment(RestEasyContainerHolder holder, String urlPattern) {
         this.holder = holder;
         this.urlPattern = urlPattern;
-        this.servletContext = servletContext;
     }
 
     public void disable() {
@@ -47,25 +45,31 @@ public class RestEasyEnvironment {
      * @param component a RestEasy singleton component
      */
     public void register(Object component) {
-        Registry registry = ((Registry)servletContext.getAttribute(Registry.class.getName()));
+        Dispatcher dispatcher = getResteasyDispatcher();
+        Registry registry = null;
+        if (dispatcher != null) {
+            registry = dispatcher.getRegistry();
+        }
+        AlakazamResourceConfig.addSingleton(checkNotNull(component));
         if (registry != null) {
             registry.addSingletonResource(checkNotNull(component));
-        } else {
-            AlakazamResourceConfig.addSingleton(checkNotNull(component));
         }
     }
 
     /**
-     * Adds the given class as a RestEasy component.
+     * Removes all instances of the given class
      *
-     * @param componentClass a RestEasy component class
+     * @param componentClass a RestEasy componentClass
      */
-    public void register(Class<?> componentClass) {
-        Registry registry = ((Registry)servletContext.getAttribute(Registry.class.getName()));
+    public void unregister(Class<?> componentClass) {
+        Dispatcher dispatcher = getResteasyDispatcher();
+        Registry registry = null;
+        if (dispatcher != null) {
+            registry = dispatcher.getRegistry();
+        }
+        AlakazamResourceConfig.removeClass(checkNotNull(componentClass));
         if (registry != null) {
-            registry.addPerRequestResource(checkNotNull(componentClass));
-        } else {
-            AlakazamResourceConfig.addClass(checkNotNull(componentClass));
+            registry.removeRegistrations(checkNotNull(componentClass));
         }
     }
 
@@ -77,19 +81,24 @@ public class RestEasyEnvironment {
         this.urlPattern = urlPattern;
     }
 
+    public Set<Object> getResources() {
+        return AlakazamResourceConfig.getAllSingletons();
+    }
+
     public void logEndpoints() {
         StringBuilder sb = new StringBuilder();
-        sb.append("\n=========================  Registered REST Resources  =========================");
-        for (Object obj : AlakazamResourceConfig.getAllSingletons()) {
+        sb.append("\n\n=========================  Registered REST Resources  =========================");
+        for (Object obj : getResources()) {
             Class clazz = obj.getClass();
             String path = ((Path)clazz.getAnnotation(Path.class)).value();
+            path = (path.startsWith("/")) ? path.substring(1) : path;
             for (Method method : clazz.getMethods()) {
                 for (String verb : getHttpMethods(method)) {
                     sb.append("\n" + String.format("%-7s %s (%s)", verb, path, clazz.getCanonicalName()));
                 }
             }
         }
-        sb.append("\n===============================================================================");
+        sb.append("\n===============================================================================\n");
         LOGGER.info(sb.toString());
     }
 
@@ -102,6 +111,15 @@ public class RestEasyEnvironment {
             }
         }
         return methods;
+    }
+
+    private Dispatcher getResteasyDispatcher() {
+        try {
+            return holder.getContainer().getDispatcher();
+        } catch (Exception e) {
+            //not yet initialized
+            return null;
+        }
     }
 
 }
