@@ -389,6 +389,7 @@ public abstract class AbstractServerFactory implements ServerFactory {
             nbHolder.setInitParameter("javax.ws.rs.Application", "io.alakazam.resteasy.AlakazamResourceConfig");
             handler.addServlet(nbHolder, resteasy.getUrlPattern());
         }
+        handler.setServer(server);
         return handler;
     }
 

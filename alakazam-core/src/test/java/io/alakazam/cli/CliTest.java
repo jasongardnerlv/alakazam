@@ -26,6 +26,10 @@ public class CliTest {
         @Override
         public void run(Configuration configuration, Environment environment) throws Exception {
         }
+
+        @Override
+        public void serverStarted() {
+        }
     };
     private final Bootstrap<Configuration> bootstrap = new Bootstrap<>(app);
     private final ByteArrayOutputStream stdOut = new ByteArrayOutputStream();

@@ -18,6 +18,11 @@ public class BootstrapTest {
         @Override
         public void run(Configuration configuration, Environment environment) throws Exception {
         }
+
+        @Override
+        public void serverStarted() {
+
+        }
     };
     private final Bootstrap<Configuration> bootstrap = new Bootstrap<Configuration>(application);
 

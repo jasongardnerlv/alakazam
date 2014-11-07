@@ -15,6 +15,9 @@ public class ApplicationTest {
 
         @Override
         public void run(FakeConfiguration configuration, Environment environment) {}
+
+        @Override
+        public void serverStarted() {}
     }
 
     private static class PoserApplication extends FakeApplication {}
@@ -34,6 +37,11 @@ public class ApplicationTest {
         @Override
         public void run(C configuration, Environment environment) throws Exception {
             this.application.run(configuration, environment);
+        }
+
+        @Override
+        public void serverStarted() {
+
         }
     }
 

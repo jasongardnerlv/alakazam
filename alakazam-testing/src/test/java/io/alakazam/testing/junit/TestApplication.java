@@ -14,4 +14,9 @@ public class TestApplication extends Application<TestConfiguration> {
     public void run(TestConfiguration configuration, Environment environment) throws Exception {
         environment.resteasy().register(new TestResource(configuration.getMessage()));
     }
+
+    @Override
+    public void serverStarted() {
+
+    }
 }

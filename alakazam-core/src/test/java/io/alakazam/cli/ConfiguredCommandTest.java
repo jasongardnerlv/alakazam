@@ -40,6 +40,10 @@ public class ConfiguredCommandTest {
         @Override
         public void run(Configuration configuration, Environment environment) throws Exception {
         }
+
+        @Override
+        public void serverStarted() {
+        }
     }
 
     private final MyApplication application = new MyApplication();

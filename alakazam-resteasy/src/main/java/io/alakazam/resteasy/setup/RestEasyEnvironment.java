@@ -1,15 +1,30 @@
 package io.alakazam.resteasy.setup;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import io.alakazam.jetty.MutableServletContextHandler;
 import io.alakazam.resteasy.AlakazamResourceConfig;
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.spi.metadata.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.spi.Registry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RestEasyEnvironment {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestEasyEnvironment.class);
     private final RestEasyContainerHolder holder;
     private final MutableServletContextHandler servletContext;
     private String urlPattern;
@@ -25,11 +40,6 @@ public class RestEasyEnvironment {
     public void disable() {
         holder.setContainer(null);
     }
-
-    // TODO
-    // public void replace(Function<ResourceConfig, ServletContainer> replace) {
-    //     holder.setContainer(replace.apply(config));
-    // }
 
     /**
      * Adds the given object as a RestEasy singleton component.
@@ -59,69 +69,39 @@ public class RestEasyEnvironment {
         }
     }
 
-    // TODO
-    // /**
-    //  * Adds array of package names which will be used to scan for components. Packages will be
-    //  * scanned recursively, including all nested packages.
-    //  *
-    //  * @param packages array of package names
-    //  */
-    // public void packages(String... packages) {
-    //     config.init(new PackageNamesScanner(checkNotNull(packages)));
-    // }
-
-    //TODO
-    // /**
-    //  * Enables the resteasy feature with the given name.
-    //  *
-    //  * @param featureName the name of the feature to be enabled
-    //  * @see com.sun.resteasy.api.core.ResourceConfig
-    //  */
-    // public void enable(String featureName) {
-    //     config.getFeatures().put(checkNotNull(featureName), Boolean.TRUE);
-    // }
-
-    //TODO
-    // /**
-    //  * Disables the resteasy feature with the given name.
-    //  *
-    //  * @param featureName the name of the feature to be disabled
-    //  * @see com.sun.resteasy.api.core.ResourceConfig
-    //  */
-    // public void disable(String featureName) {
-    //     config.getFeatures().put(checkNotNull(featureName), Boolean.FALSE);
-    // }
-
-    // TODO
-    // /**
-    //  * Sets the given resteasy property.
-    //  *
-    //  * @param name  the name of the resteasy property
-    //  * @param value the value of the resteasy property
-    //  * @see com.sun.resteasy.api.core.ResourceConfig
-    //  */
-    // public void property(String name, @Nullable Object value) {
-    //     config.getProperties().put(checkNotNull(name), value);
-    // }
-
-    //TODO
-    // /**
-    //  * Gets the given resteasy property.
-    //  *
-    //  * @param name the name of the resteasy property
-    //  * @see com.sun.resteasy.api.core.ResourceConfig
-    //  */
-    // @SuppressWarnings("unchecked")
-    // public <T> T getProperty(String name) {
-    //     return (T) config.getProperties().get(name);
-    // }
-
     public String getUrlPattern() {
         return urlPattern;
     }
 
     public void setUrlPattern(String urlPattern) {
         this.urlPattern = urlPattern;
+    }
+
+    public void logEndpoints() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=========================  Registered REST Resources  =========================");
+        for (Object obj : AlakazamResourceConfig.getAllSingletons()) {
+            Class clazz = obj.getClass();
+            String path = ((Path)clazz.getAnnotation(Path.class)).value();
+            for (Method method : clazz.getMethods()) {
+                for (String verb : getHttpMethods(method)) {
+                    sb.append("\n" + String.format("%-7s %s (%s)", verb, path, clazz.getCanonicalName()));
+                }
+            }
+        }
+        sb.append("\n===============================================================================");
+        LOGGER.info(sb.toString());
+    }
+
+    private Set<String> getHttpMethods(Method method) {
+        Set<String> methods = new HashSet<String>();
+        for (Annotation annotation : method.getAnnotations()){
+            HttpMethod http = annotation.annotationType().getAnnotation(HttpMethod.class);
+            if (http != null) {
+                methods.add(http.value());
+            }
+        }
+        return methods;
     }
 
 }

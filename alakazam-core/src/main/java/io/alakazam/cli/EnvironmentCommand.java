@@ -15,7 +15,7 @@ import javax.validation.Validation;
  * @see Configuration
  */
 public abstract class EnvironmentCommand<T extends Configuration> extends ConfiguredCommand<T> {
-    private final Application<T> application;
+    protected final Application<T> application;
 
     /**
      * Creates a new environment command.

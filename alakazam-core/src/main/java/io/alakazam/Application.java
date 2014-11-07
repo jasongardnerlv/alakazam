@@ -57,6 +57,11 @@ public abstract class Application<T extends Configuration> {
     public abstract void run(T configuration, Environment environment) throws Exception;
 
     /**
+     * Invoked after the server has started
+     */
+    public abstract void serverStarted();
+
+    /**
      * Parses command-line arguments and runs the application. Call this method from a {@code public
      * static void main} entry point in your application.
      *
