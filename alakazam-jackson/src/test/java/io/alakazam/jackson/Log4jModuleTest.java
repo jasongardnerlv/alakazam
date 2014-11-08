@@ -1,18 +1,18 @@
 package io.alakazam.jackson;
 
-import ch.qos.logback.classic.Level;
+import org.apache.logging.log4j.Level;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class LogbackModuleTest {
+public class Log4jModuleTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setUp() throws Exception {
-        mapper.registerModule(new LogbackModule());
+        mapper.registerModule(new Log4jModule());
     }
 
     @Test

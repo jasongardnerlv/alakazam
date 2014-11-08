@@ -1,6 +1,6 @@
 package io.alakazam.jackson;
 
-import ch.qos.logback.classic.Level;
+import org.apache.logging.log4j.Level;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 
 import java.io.IOException;
 
-public class LogbackModule extends Module {
+public class Log4jModule extends Module {
     private static class LevelDeserializer extends JsonDeserializer<Level> {
         @Override
         public Level deserialize(JsonParser jp,
@@ -32,7 +32,7 @@ public class LogbackModule extends Module {
         }
     }
 
-    private static class LogbackDeserializers extends Deserializers.Base {
+    private static class Log4jDeserializers extends Deserializers.Base {
         @Override
         public JsonDeserializer<?> findBeanDeserializer(JavaType type,
                                                         DeserializationConfig config,
@@ -51,7 +51,7 @@ public class LogbackModule extends Module {
         }
     }
 
-    private static class LogbackSerializers extends Serializers.Base {
+    private static class Log4jSerializers extends Serializers.Base {
         @Override
         public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc) {
             if (Level.class.isAssignableFrom(type.getRawClass())) {
@@ -63,7 +63,7 @@ public class LogbackModule extends Module {
 
     @Override
     public String getModuleName() {
-        return "LogbackModule";
+        return "Log4jModule";
     }
 
     @Override
@@ -73,7 +73,7 @@ public class LogbackModule extends Module {
 
     @Override
     public void setupModule(SetupContext context) {
-        context.addSerializers(new LogbackSerializers());
-        context.addDeserializers(new LogbackDeserializers());
+        context.addSerializers(new Log4jSerializers());
+        context.addDeserializers(new Log4jDeserializers());
     }
 }

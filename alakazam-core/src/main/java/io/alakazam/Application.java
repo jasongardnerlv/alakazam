@@ -3,7 +3,6 @@ package io.alakazam;
 import io.alakazam.cli.CheckCommand;
 import io.alakazam.cli.Cli;
 import io.alakazam.cli.ServerCommand;
-import io.alakazam.logging.LoggingFactory;
 import io.alakazam.setup.Bootstrap;
 import io.alakazam.setup.Environment;
 import io.alakazam.util.Generics;
@@ -15,10 +14,6 @@ import io.alakazam.util.JarLocation;
  * @param <T> the type of configuration class for this application
  */
 public abstract class Application<T extends Configuration> {
-    static {
-        // make sure spinning up Hibernate Validator doesn't yell at us
-        LoggingFactory.bootstrap();
-    }
 
     /**
      * Returns the {@link Class} of the configuration class type parameter.

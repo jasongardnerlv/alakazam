@@ -10,7 +10,6 @@ import io.alakazam.resteasy.setup.RestEasyEnvironment;
 import io.alakazam.jetty.GzipFilterFactory;
 import io.alakazam.jetty.MutableServletContextHandler;
 import io.alakazam.jetty.NonblockingServletHolder;
-import io.alakazam.jetty.RequestLogFactory;
 import io.alakazam.lifecycle.setup.LifecycleEnvironment;
 import io.alakazam.servlets.ThreadNameFilter;
 import io.alakazam.util.Duration;
@@ -20,7 +19,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -55,11 +53,6 @@ import java.util.regex.Pattern;
  *         <td>Name</td>
  *         <td>Default</td>
  *         <td>Description</td>
- *     </tr>
- *     <tr>
- *         <td>{@code requestLog}</td>
- *         <td></td>
- *         <td>The {@link RequestLogFactory request log} configuration.</td>
  *     </tr>
  *     <tr>
  *         <td>{@code gzip}</td>
@@ -169,10 +162,6 @@ public abstract class AbstractServerFactory implements ServerFactory {
 
     @Valid
     @NotNull
-    private RequestLogFactory requestLog = new RequestLogFactory();
-
-    @Valid
-    @NotNull
     private GzipFilterFactory gzip = new GzipFilterFactory();
 
     @Min(2)
@@ -210,16 +199,6 @@ public abstract class AbstractServerFactory implements ServerFactory {
     @ValidationMethod(message = "must have a smaller minThreads than maxThreads")
     public boolean isThreadPoolSizedCorrectly() {
         return minThreads <= maxThreads;
-    }
-
-    @JsonProperty("requestLog")
-    public RequestLogFactory getRequestLogFactory() {
-        return requestLog;
-    }
-
-    @JsonProperty("requestLog")
-    public void setRequestLogFactory(RequestLogFactory requestLog) {
-        this.requestLog = requestLog;
     }
 
     @JsonProperty("gzip")
@@ -456,20 +435,6 @@ public abstract class AbstractServerFactory implements ServerFactory {
         }
 
         return listener;
-    }
-
-    protected Handler addRequestLog(Server server, Handler handler, String name) {
-        if (requestLog.isEnabled()) {
-            final RequestLogHandler requestLogHandler = new RequestLogHandler();
-            requestLogHandler.setRequestLog(requestLog.build(name));
-            // server should own the request log's lifecycle since it's already started,
-            // the handler might not become managed in case of an error which would leave
-            // the request log stranded
-            server.addBean(requestLogHandler.getRequestLog(), true);
-            requestLogHandler.setHandler(handler);
-            return requestLogHandler;
-        }
-        return handler;
     }
 
     protected Handler addStatsHandler(Handler handler) {

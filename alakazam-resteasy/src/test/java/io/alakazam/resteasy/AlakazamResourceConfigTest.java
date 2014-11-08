@@ -1,7 +1,6 @@
 package io.alakazam.resteasy;
 
 import io.alakazam.resteasy.dummy.DummyResource;
-import io.alakazam.logging.LoggingFactory;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -11,9 +10,9 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 @SuppressWarnings("unchecked")
 public class AlakazamResourceConfigTest {
-    static {
-        LoggingFactory.bootstrap();
-    }
+    // static {
+    //     LoggingFactory.bootstrap();
+    // }
 
     // @Test
     // public void findsResourceClassInPackage() {

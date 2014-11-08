@@ -68,10 +68,6 @@ public abstract class ConfiguredCommand<T extends Configuration> extends Command
                                            bootstrap.getObjectMapper());
 
         try {
-            if (configuration != null) {
-                configuration.getLoggingFactory().configure(bootstrap.getApplication().getName());
-            }
-
             run((Bootstrap<T>) bootstrap, namespace, configuration);
         } finally {
             if (!asynchronous) {
@@ -85,9 +81,7 @@ public abstract class ConfiguredCommand<T extends Configuration> extends Command
     }
 
     protected void cleanup() {
-        if (configuration != null) {
-            configuration.getLoggingFactory().stop();
-        }
+
     }
 
     /**

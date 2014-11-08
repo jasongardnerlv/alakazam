@@ -5,9 +5,6 @@ import io.alakazam.configuration.ConfigurationFactory;
 import io.alakazam.jackson.DiscoverableSubtypeResolver;
 import io.alakazam.jackson.Jackson;
 import io.alakazam.jetty.HttpConnectorFactory;
-import io.alakazam.logging.ConsoleAppenderFactory;
-import io.alakazam.logging.FileAppenderFactory;
-import io.alakazam.logging.SyslogAppenderFactory;
 import io.alakazam.setup.Environment;
 
 import java.io.File;
@@ -40,15 +37,13 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
 
 public class DefaultServerFactoryTest {
+
     private DefaultServerFactory http;
 
     @Before
     public void setUp() throws Exception {
         final ObjectMapper objectMapper = Jackson.newObjectMapper();
-        objectMapper.getSubtypeResolver().registerSubtypes(ConsoleAppenderFactory.class,
-                                                           FileAppenderFactory.class,
-                                                           SyslogAppenderFactory.class,
-                                                           HttpConnectorFactory.class);
+        objectMapper.getSubtypeResolver().registerSubtypes(HttpConnectorFactory.class);
 
         this.http = new ConfigurationFactory<>(DefaultServerFactory.class,
                                                Validation.buildDefaultValidatorFactory().getValidator(),
@@ -107,7 +102,6 @@ public class DefaultServerFactoryTest {
             }
         }, 5, TimeUnit.SECONDS);
 
-
         server.start();
 
         final int port = ((AbstractNetworkConnector) server.getConnectors()[0]).getLocalPort();
@@ -121,9 +115,7 @@ public class DefaultServerFactoryTest {
                 return CharStreams.toString(new InputStreamReader(connection.getInputStream()));
             }
         });
-
         requestReceived.await();
-
         Future<Void> serverStopped = executor.submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -145,7 +137,6 @@ public class DefaultServerFactoryTest {
             }
             Thread.sleep(5);
         }
-
         String result = futureResult.get();
         assertThat(result).isEqualTo("test");
 

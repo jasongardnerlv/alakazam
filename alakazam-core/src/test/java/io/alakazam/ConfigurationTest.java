@@ -3,7 +3,6 @@ package io.alakazam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.alakazam.jackson.Jackson;
 import io.alakazam.jetty.ConnectorFactory;
-import io.alakazam.logging.AppenderFactory;
 import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -18,16 +17,8 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void hasALoggingConfiguration() throws Exception {
-        assertThat(configuration.getLoggingFactory())
-                .isNotNull();
-    }
-
-    @Test
     public void ensureConfigSerializable() throws Exception {
         final ObjectMapper mapper = Jackson.newObjectMapper();
-        // mapper.getSubtypeResolver()
-        //       .registerSubtypes(ServiceFinder.find(AppenderFactory.class).toClassArray());
         // mapper.getSubtypeResolver()
         //       .registerSubtypes(ServiceFinder.find(ConnectorFactory.class).toClassArray());
 

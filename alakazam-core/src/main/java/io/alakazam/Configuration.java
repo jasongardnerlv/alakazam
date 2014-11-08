@@ -2,7 +2,6 @@ package io.alakazam;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
-import io.alakazam.logging.LoggingFactory;
 import io.alakazam.server.DefaultServerFactory;
 import io.alakazam.server.ServerFactory;
 
@@ -62,10 +61,6 @@ public class Configuration {
     @NotNull
     private ServerFactory server = new DefaultServerFactory();
 
-    @Valid
-    @NotNull
-    private LoggingFactory logging = new LoggingFactory();
-
     /**
      * Returns the server-specific section of the configuration file.
      *
@@ -84,29 +79,10 @@ public class Configuration {
         this.server = factory;
     }
 
-    /**
-     * Returns the logging-specific section of the configuration file.
-     *
-     * @return logging-specific configuration parameters
-     */
-    @JsonProperty("logging")
-    public LoggingFactory getLoggingFactory() {
-        return logging;
-    }
-
-    /**
-     * Sets the logging-specific section of the configuration file.
-     */
-    @JsonProperty("logging")
-    public void setLoggingFactory(LoggingFactory factory) {
-        this.logging = factory;
-    }
-
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                       .add("server", server)
-                      .add("logging", logging)
                       .toString();
     }
 }

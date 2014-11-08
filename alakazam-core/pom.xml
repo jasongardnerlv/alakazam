@@ -12,6 +12,16 @@
     <name>Alakazam</name>
 
     <dependencies>
+       <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+       <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.alakazam</groupId>
             <artifactId>alakazam-util</artifactId>
@@ -30,11 +40,6 @@
         <dependency>
             <groupId>io.alakazam</groupId>
             <artifactId>alakazam-configuration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.alakazam</groupId>
-            <artifactId>alakazam-logging</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

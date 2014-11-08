@@ -75,7 +75,7 @@ public class DefaultServerFactory extends AbstractServerFactory {
                                                             environment.getApplicationContext(),
                                                             environment.getRestEasyServletContainer());
         final RoutingHandler routingHandler = buildRoutingHandler(server, applicationHandler);
-        server.setHandler(addStatsHandler(addRequestLog(server, routingHandler, environment.getName())));
+        server.setHandler(addStatsHandler(routingHandler));
         return server;
     }
 

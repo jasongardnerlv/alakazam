@@ -12,10 +12,30 @@
     <name>Alakazam Jetty Support</name>
 
     <dependencies>
+       <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.alakazam</groupId>
-            <artifactId>alakazam-logging</artifactId>
+            <artifactId>alakazam-util</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.alakazam</groupId>
+            <artifactId>alakazam-validation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.alakazam</groupId>
+            <artifactId>alakazam-jackson</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

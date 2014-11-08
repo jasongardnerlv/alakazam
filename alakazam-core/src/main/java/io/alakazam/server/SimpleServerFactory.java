@@ -99,8 +99,7 @@ public class SimpleServerFactory extends AbstractServerFactory {
         final ContextRoutingHandler routingHandler = new ContextRoutingHandler(ImmutableMap.of(
                 applicationContextPath, applicationHandler
         ));
-        server.setHandler(addStatsHandler(addRequestLog(server, routingHandler, environment.getName())));
-
+        server.setHandler(addStatsHandler(routingHandler));
         return server;
     }
 }
