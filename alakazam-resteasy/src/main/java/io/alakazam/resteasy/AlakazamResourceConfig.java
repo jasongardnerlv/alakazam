@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,10 +30,12 @@ public class AlakazamResourceConfig extends Application {
     }
 
     public static void removeClass(Class<?> clazz) {
-        for (Object singleton : singletons) {
+        Iterator<Object> iterator = singletons.iterator();
+        while (iterator.hasNext()) {
+            Object singleton = iterator.next();
             if (clazz.isAssignableFrom(singleton.getClass())) {
-                singletons.remove(singleton);
-            }
+                iterator.remove();
+            } 
         }
     }
 
