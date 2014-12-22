@@ -4,10 +4,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import io.alakazam.resteasy.AlakazamResourceConfig;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +69,24 @@ public class RestEasyEnvironment {
         AlakazamResourceConfig.removeClass(checkNotNull(componentClass));
         if (registry != null) {
             registry.removeRegistrations(checkNotNull(componentClass));
+        }
+    }
+
+    /**
+     * Adds the given object as a RestEasy provider.
+     *
+     * @param provider a RestEasy provider
+     */
+    public void registerProvider(Object provider) {
+        if (provider != null) {
+            Dispatcher dispatcher = getResteasyDispatcher();
+            ResteasyProviderFactory factory = null;
+            if (dispatcher != null) {
+                factory = dispatcher.getProviderFactory();
+                if (factory != null) {
+                    factory.register(provider);
+                }
+            }
         }
     }
 
