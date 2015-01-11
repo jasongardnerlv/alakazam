@@ -1,5 +1,11 @@
 package io.alakazam.cli;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import io.alakazam.Application;
 import io.alakazam.Configuration;
 import io.alakazam.setup.Environment;
@@ -38,6 +44,7 @@ public class ServerCommand<T extends Configuration> extends EnvironmentCommand<T
     protected void run(Environment environment, Namespace namespace, T configuration) throws Exception {
         final Server server = configuration.getServerFactory().build(environment);
         try {
+            writePID();
             server.addLifeCycleListener(new LifeCycleListener());
             cleanupAsynchronously();
             server.start();
@@ -54,6 +61,29 @@ public class ServerCommand<T extends Configuration> extends EnvironmentCommand<T
         @Override
         public void lifeCycleStopped(LifeCycle event) {
             cleanup();
+            removePID();
+        }
+    }
+
+    private final void writePID() throws Exception {
+        String procId = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+        File pidfile = new File(System.getProperty("user.dir"), application.getName() + ".pid");
+        BufferedWriter bw = null;
+        try {
+            bw = Files.newBufferedWriter(Paths.get(pidfile.toURI()), Charset.defaultCharset());
+        } catch (Exception e) {
+            throw e;
+        }
+        bw.write(procId, 0, procId.length());
+        bw.close();
+    }
+
+    private final void removePID() {
+        File pidfile = new File(System.getProperty("user.dir"), application.getName() + ".pid");
+        try {
+            pidfile.delete();
+        } catch (Exception e) {
+            /*ignored*/
         }
     }
 }
