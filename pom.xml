@@ -6,7 +6,7 @@
     </prerequisites>
     <groupId>io.alakazam</groupId>
     <artifactId>alakazam-parent</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <packaging>pom</packaging>
     <name>alakazam</name>
     <url>${alakazam.url}</url>
