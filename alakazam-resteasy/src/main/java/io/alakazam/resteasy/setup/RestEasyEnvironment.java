@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import javax.annotation.Nullable;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
@@ -103,17 +104,21 @@ public class RestEasyEnvironment {
     }
 
     public void logEndpoints() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n\n=========================  Registered REST Resources  =========================");
+        Map<String, String> endpoints = new TreeMap<String, String>();
         for (Object obj : getResources()) {
             Class clazz = obj.getClass();
             String path = ((Path)clazz.getAnnotation(Path.class)).value();
             path = (path.startsWith("/")) ? path.substring(1) : path;
             for (Method method : clazz.getMethods()) {
                 for (String verb : getHttpMethods(method)) {
-                    sb.append("\n" + String.format("%-7s %s (%s)", verb, path, clazz.getCanonicalName()));
+                    endpoints.put(path + verb, "\n" + String.format("%-7s %s (%s)", verb, path, clazz.getCanonicalName()));
                 }
             }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n=========================  Registered REST Resources  =========================");
+        for (Map.Entry<String, String> entry : endpoints.entrySet()) {
+            sb.append(entry.getValue());
         }
         sb.append("\n===============================================================================\n");
         LOGGER.info(sb.toString());
