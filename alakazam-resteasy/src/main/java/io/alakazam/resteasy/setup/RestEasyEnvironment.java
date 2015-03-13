@@ -111,7 +111,12 @@ public class RestEasyEnvironment {
             path = (path.startsWith("/")) ? path.substring(1) : path;
             for (Method method : clazz.getMethods()) {
                 for (String verb : getHttpMethods(method)) {
-                    endpoints.put(path + verb, "\n" + String.format("%-7s %s (%s)", verb, path, clazz.getCanonicalName()));
+                    Path subanno = ((Path)method.getAnnotation(Path.class));
+                    String subpath = path;
+                    if (subanno != null) {
+                        subpath = path + "/" + subanno.value();
+                    }
+                    endpoints.put(subpath + " " + verb, "\n" + String.format("%-7s %s (%s)", verb, subpath, clazz.getCanonicalName()));
                 }
             }
         }
