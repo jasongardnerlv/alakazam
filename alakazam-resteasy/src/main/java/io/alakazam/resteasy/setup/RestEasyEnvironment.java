@@ -107,7 +107,12 @@ public class RestEasyEnvironment {
         Map<String, String> endpoints = new TreeMap<String, String>();
         for (Object obj : getResources()) {
             Class clazz = obj.getClass();
-            String path = ((Path)clazz.getAnnotation(Path.class)).value();
+            Path pathAnno = ((Path)clazz.getAnnotation(Path.class));
+            if (pathAnno == null) {
+                LOGGER.error("REST Resource missing path annotation: " + clazz.getName());
+                return;
+            }
+            String path = pathAnno.value();
             path = (path.startsWith("/")) ? path.substring(1) : path;
             for (Method method : clazz.getMethods()) {
                 for (String verb : getHttpMethods(method)) {
