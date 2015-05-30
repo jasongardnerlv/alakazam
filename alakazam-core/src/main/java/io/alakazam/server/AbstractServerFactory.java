@@ -363,7 +363,7 @@ public abstract class AbstractServerFactory implements ServerFactory {
             handler.addFilter(holder, "/*", EnumSet.allOf(DispatcherType.class));
         }
         if (restEasyContainer != null) {
-            resteasy.register(new JacksonMessageBodyProvider(objectMapper, validator));
+            resteasy.register(new JacksonMessageBodyProvider(objectMapper, validator), true);
             final ServletHolder nbHolder = new NonblockingServletHolder(restEasyContainer);
             nbHolder.setInitParameter("javax.ws.rs.Application", "io.alakazam.resteasy.AlakazamResourceConfig");
             handler.addServlet(nbHolder, resteasy.getUrlPattern());

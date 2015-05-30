@@ -12,7 +12,7 @@ public class TestApplication extends Application<TestConfiguration> {
 
     @Override
     public void run(TestConfiguration configuration, Environment environment) throws Exception {
-        environment.resteasy().register(new TestResource(configuration.getMessage()));
+        environment.resteasy().register(new TestResource(configuration.getMessage()), true);
     }
 
     @Override

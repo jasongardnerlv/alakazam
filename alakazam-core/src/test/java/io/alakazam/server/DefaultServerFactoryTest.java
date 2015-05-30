@@ -84,7 +84,7 @@ public class DefaultServerFactoryTest {
         CountDownLatch requestReceived = new CountDownLatch(1);
         CountDownLatch shutdownInvoked = new CountDownLatch(1);
 
-        environment.resteasy().register(new TestResource(requestReceived, shutdownInvoked));
+        environment.resteasy().register(new TestResource(requestReceived, shutdownInvoked), true);
 
         final ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
         final Server server = http.build(environment);

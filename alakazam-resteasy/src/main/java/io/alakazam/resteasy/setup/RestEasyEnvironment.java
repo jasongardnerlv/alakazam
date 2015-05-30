@@ -44,9 +44,23 @@ public class RestEasyEnvironment {
      *
      * @param component a RestEasy singleton component
      */
-    public void register(Object component) {
+    public void register(Object component, boolean force) {
         Dispatcher dispatcher = getResteasyDispatcher();
         Registry registry = null;
+        if (force == false) {
+            Path pathAnno = ((Path)component.getClass().getAnnotation(Path.class));
+            if (pathAnno != null) {
+                for (Object o : AlakazamResourceConfig.getAllSingletons()) {
+                    Path regAnno = ((Path)o.getClass().getAnnotation(Path.class));
+                    if (regAnno != null) {
+                        if (stripLeadingSlash(pathAnno.value()).equals(stripLeadingSlash(regAnno.value()))) {
+                            throw new IllegalArgumentException("Can't register '" + component.getClass().getName() +
+                                                               "' - Path already registered!");
+                        }
+                    }
+                }
+            }
+        }
         if (dispatcher != null) {
             registry = dispatcher.getRegistry();
         }
@@ -112,8 +126,7 @@ public class RestEasyEnvironment {
                 LOGGER.error("REST Resource missing path annotation: " + clazz.getName());
                 return;
             }
-            String path = pathAnno.value();
-            path = (path.startsWith("/")) ? path.substring(1) : path;
+            String path = stripLeadingSlash(pathAnno.value());
             for (Method method : clazz.getMethods()) {
                 for (String verb : getHttpMethods(method)) {
                     Path subanno = ((Path)method.getAnnotation(Path.class));
@@ -152,6 +165,10 @@ public class RestEasyEnvironment {
             //not yet initialized
             return null;
         }
+    }
+
+    private String stripLeadingSlash(String str) {
+        return (str.startsWith("/")) ? str.substring(1) : str;
     }
 
 }
