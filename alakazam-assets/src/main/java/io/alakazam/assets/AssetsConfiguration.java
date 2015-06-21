@@ -3,7 +3,6 @@ package io.alakazam.assets;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.fasterxml.jackson.annotation.JsonProperty;
-//import org.codehaus.jackson.annotate.JsonProperty; //temporarily need this to support older jackson version
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 

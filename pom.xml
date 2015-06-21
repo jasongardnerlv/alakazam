@@ -6,12 +6,11 @@
     </prerequisites>
     <groupId>io.alakazam</groupId>
     <artifactId>alakazam-parent</artifactId>
-    <version>0.1.8</version>
+    <version>0.2.0</version>
     <packaging>pom</packaging>
     <name>alakazam</name>
     <url>${alakazam.url}</url>
-    <description>TODO
-    </description>
+    <description>Web application server based on Jetty, RestEasy, and Jackson.</description>
     <modules>
         <module>alakazam-core</module>
         <module>alakazam-testing</module>

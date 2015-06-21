@@ -43,11 +43,12 @@ public class RestEasyEnvironment {
      * Adds the given object as a RestEasy singleton component.
      *
      * @param component a RestEasy singleton component
+     * @param allowDuplicatePaths skip unique check for resource paths
      */
-    public void register(Object component, boolean force) {
+    public void register(Object component, boolean allowDuplicatePaths) {
         Dispatcher dispatcher = getResteasyDispatcher();
         Registry registry = null;
-        if (force == false) {
+        if (allowDuplicatePaths == false) {
             Path pathAnno = ((Path)component.getClass().getAnnotation(Path.class));
             if (pathAnno != null) {
                 for (Object o : AlakazamResourceConfig.getAllSingletons()) {
