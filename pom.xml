@@ -23,6 +23,7 @@
         <module>alakazam-servlets</module>
         <module>alakazam-lifecycle</module>
         <module>alakazam-assets</module>
+        <module>alakazam-ws</module>
     </modules>
     <properties>
         <alakazam.url>TODO</alakazam.url>
@@ -36,6 +37,7 @@
         <servlet.version>3.0.0.v201112011016</servlet.version>
         <jetty.version>9.0.7.v20131107</jetty.version>
         <guava.version>16.0.1</guava.version>
+        <cxf.version>3.0.4</cxf.version>
     </properties>
     <distributionManagement>
         <repository>
