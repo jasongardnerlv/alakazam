@@ -13,6 +13,8 @@ import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServlet;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Endpoint;
@@ -56,17 +58,25 @@ public class JAXWSEnvironment {
     }
 
     public void logEndpoints() {
-        ServerRegistry sr = bus.getExtension(org.apache.cxf.endpoint.ServerRegistry.class);
-        if (sr.getServers().size() > 0) {
-            String endpoints = "";
-            for (Server s : sr.getServers()) {
-                endpoints += "    " + this.defaultPath + s.getEndpoint().getEndpointInfo().getAddress() +
-                        " (" + s.getEndpoint().getEndpointInfo().getInterface().getName() + ")\n";
-            }
-            log.info("The following JAX-WS service endpoints were registered:\n\n" + endpoints);
-        } else {
-            log.info("No JAX-WS service endpoints were registered.");
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n==========================  Registered Web Services  ==========================");
+        for (String s : getEndpointInfo()) {
+            sb.append("\n" + s);
         }
+        sb.append("\n===============================================================================\n");
+        log.info(sb.toString());
+    }
+
+    public List<String> getEndpointInfo() {
+        ServerRegistry sr = bus.getExtension(org.apache.cxf.endpoint.ServerRegistry.class);
+        List<String> endpoints = new ArrayList<String>();
+        if (sr.getServers().size() > 0) {
+            for (Server s : sr.getServers()) {
+                endpoints.add(this.defaultPath + s.getEndpoint().getEndpointInfo().getAddress() +
+                                " (" + s.getEndpoint().getEndpointInfo().getInterface().getName() + ")");
+            }
+        }
+        return endpoints;
     }
 
     /**
@@ -175,4 +185,5 @@ public class JAXWSEnvironment {
 
         return proxy;
     }
+
 }

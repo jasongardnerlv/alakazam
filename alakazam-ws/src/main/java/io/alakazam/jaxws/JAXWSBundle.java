@@ -6,6 +6,7 @@ import io.alakazam.setup.Bootstrap;
 import io.alakazam.setup.Environment;
 import org.eclipse.jetty.server.Server;
 
+import java.util.List;
 import javax.xml.ws.handler.Handler;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -68,7 +69,7 @@ public class JAXWSBundle implements Bundle {
         environment.lifecycle().addServerLifecycleListener(new ServerLifecycleListener() {
             @Override
             public void serverStarted(Server server) {
-                jaxwsEnvironment.logEndpoints();
+                //jaxwsEnvironment.logEndpoints();
             }
         });
     }
@@ -128,5 +129,13 @@ public class JAXWSBundle implements Bundle {
     public <T> T getClient(ClientBuilder<T> clientBuilder) {
         checkArgument(clientBuilder != null, "ClientBuilder is null");
         return jaxwsEnvironment.getClient(clientBuilder);
+    }
+
+    public List<String> getEndpointInfo() {
+        return jaxwsEnvironment.getEndpointInfo();
+    }
+
+    public void logEndpoints() {
+        jaxwsEnvironment.logEndpoints();
     }
 }
